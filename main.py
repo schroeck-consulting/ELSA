@@ -1,78 +1,50 @@
 import streamlit as st
 import os
-import time
-from openai import OpenAI
 from dotenv import load_dotenv
+from assistant_api import AssistantClient
+from utils import display_typing_effect
 
 
-def pretty_print(messages):
-    responses = []
-    for m in messages:
-        if m.role == "assistant":
-            responses.append(m.content[0].text.value)
-    return "\n".join(responses)
+def init_session_state():
+    if "openai_model" not in st.session_state:
+        st.session_state.openai_model = "gpt-4o-2024-08-06"
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-def submit_message(assistant_id, thread, user_message):
-    client.beta.threads.messages.create(
-        thread_id=thread.id, role="user", content=user_message
-    )
-    return client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=assistant_id,
-    )
 
-def wait_on_run(run, thread):
-    while run.status == "queued" or run.status == "in_progress":
-        run = client.beta.threads.runs.retrieve(
-            thread_id=thread.id,
-            run_id=run.id,
-        )
-        time.sleep(0.5)
-    return run
+def main():
+    st.title("Epic Builder Copilot")
 
-def get_response(thread):
-    return client.beta.threads.messages.list(thread_id=thread.id, order="asc")
+    init_session_state()
 
-def create_thread_and_run(user_input):
-    thread = client.beta.threads.create()
-    run = submit_message(os.getenv("ASSISTANT_ID"), thread, user_input)
-    return thread, run
+    # Initialize OpenAI Assistant Client
+    load_dotenv()
+    assistant_id = os.getenv("ASSISTANT_ID")
+    api_key = os.getenv("OPENAI_API_KEY")
+    assistant_client = AssistantClient(api_key=api_key, assistant_id=assistant_id) 
+    
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    
+    if user_query := st.chat_input("Message"):
+        st.session_state.messages.append({"role": "user", "content": user_query})
+        with st.chat_message("user"):
+            st.markdown(user_query)
 
-######
-st.title("Epic Builder Copilot")
+        with st.chat_message("assistant"):
+            with st.spinner(''):
+                thread = assistant_client.create_thread()
+                run = assistant_client.submit_message(thread, user_query)
+                run = assistant_client.wait_on_run(run, thread)
+                response_messages = assistant_client.get_response_messages(thread)
+                response = assistant_client.extract_assistant_response(response_messages)
+                # st.markdown(response)
+                
+            # Simulate typing effect
+            display_typing_effect(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
 
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-4o-2024-08-06"
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-if user_query := st.chat_input("Message"):
-    st.session_state.messages.append({"role": "user", "content": user_query})
-    with st.chat_message("user"):
-        st.markdown(user_query)
-
-    with st.chat_message("assistant"):
-        with st.spinner('Processing...'):
-            thread = client.beta.threads.create()
-            run = submit_message(os.getenv("ASSISTANT_ID"), thread, user_query)
-            run = wait_on_run(run, thread)
-            response_messages = get_response(thread)
-            response = pretty_print(response_messages)
-            # st.markdown(response)
-            
-        # Simulate typing effect
-        message_placeholder = st.empty()
-        full_response = ""
-        for char in response:
-            full_response += char
-            message_placeholder.markdown(full_response)
-            time.sleep(0.002)  # Adjust the speed as needed
-    st.session_state.messages.append({"role": "assistant", "content": response})
+if __name__ == "__main__":
+    main()
