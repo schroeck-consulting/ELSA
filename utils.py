@@ -8,4 +8,4 @@ def display_typing_effect(text: str):
     for char in text:
         full_text += char
         placeholder.markdown(full_text)
-        time.sleep(0.002)  # Adjust the speed as needed
+        time.sleep(0.002)
