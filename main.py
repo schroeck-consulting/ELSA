@@ -31,7 +31,23 @@ predefined_questions = [
     "8. Are you providing new output data?\n IF yes, what new data are you outputting and where is it being sent to?",
     "9.	Do you have any reference (similar) epics that can help me better understand your requirement?",
     "10. Are there any sections in the questionnaire that require further input on clarity?",
-] 
+]
+
+def project_detailes_query(questions, answers):
+    """
+    Formats the predefined questions and answers into a query for the OpenAI assistant.
+    """
+    query = "Here is the most important information about epic:\n\n"
+
+    # Combine questions and answers using zip()
+    for i, (question, answer) in enumerate(zip(questions, answers), start=1):
+        query += f"{i}. **{question}**\n"
+        query += f"   - Answer: {answer}\n\n"
+
+    query += "Now, based on the above details, help me generate an epic for this project.\n"
+    query += "Please also ask for any clarifications or missing information if needed."
+    # print(query)
+    return query
 
 
 
@@ -78,10 +94,8 @@ def main():
             # Once all predefined questions are answered, provide the gathered information to the assistant
             with st.chat_message("assistant"):
                 with st.spinner('Initializing...'):
-                    initial_data = "Here is some data to start the conversation in the background: ... \
-                                    Now, thank the user for the information and ask a question about the project before\
-                                    you genearte an epic"
-                    run = assistant_client.submit_message(st.session_state.thread_id, initial_data)
+                    initial_query = project_detailes_query(predefined_questions, st.session_state.predefined_responses)
+                    run = assistant_client.submit_message(st.session_state.thread_id, initial_query)
                     run = assistant_client.wait_on_run(run, st.session_state.thread_id)
                     response_messages = assistant_client.get_response_messages(st.session_state.thread_id)
                     initial_response = assistant_client.extract_assistant_response(response_messages)
