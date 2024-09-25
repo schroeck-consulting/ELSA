@@ -4,17 +4,16 @@ from session_utils import init_session_state, init_assistant_client
 
 
 PREDEFINED_QUESTIONS = [
-    "1.	What Team will be implementing this requirement?",
-    "2.	I see that (BAT) often works also with the following teams. Are any of them also involved for this epic?",
-    "3.	Brief description of what you want",
-    "4. How is this different from what we are already doing?",
-    "5. Which of your stakeholders will benefit from this epic? + benefits",
-    "6. You usually work with the following technical components. Which components are likely to be impacted?",
-    "7. Do you need new input data for this epic?\n IF yes, what new data and from which system is it needed?",
-    "8. Are you providing new output data?\n IF yes, what new data are you outputting and where is it being sent to?",
-    "9.	Do you have any reference (similar) epics that can help me better understand your requirement?",
-    "10. Are there any sections in the questionnaire that require further input on clarity?",
-]
+    {"id": "team", "question": "1. What Team will be implementing this requirement?"},
+    {"id": "teams_involved", "question": "2. I see that {team} often works also with the following teams. Are any of them also involved for this epic?"},
+    {"id": "summary", "question": "3. Brief description of what you want"},
+    {"id": "differences", "question": "4. How is it different to what we are already doing?"},
+    {"id": "stakeholders", "question": "5. Which of your stakeholders benefit from this epic? "},
+    {"id": "technical_components", "question": "6. I think you usually work with the following technical components. Which technical components do you think are likely to be impacted? "},
+    {"id": "input_data", "question": "7. Do you need new input data for this epic?"},
+    {"id": "output_data", "question": "8. Are you providing new output data?"},
+    # {"id": "", "question": ""},
+    ]
 
 def main():
     st.title("Epic Builder Copilot")
