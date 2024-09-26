@@ -1,40 +1,9 @@
 import streamlit as st
 import time
-from utils import display_typing_effect
-from dynamic_question_logic import get_suggestions
+from icecream import ic
+from utils import display_message
+from dynamic_question_logic import generate_suggestions
 
-team="QA Team"####зберігаємо команду з першої відповіді
-
-question_to_suggestions = {
-    "team": {
-        "suggestions": get_suggestions("team"),
-        "multiple_choice": False
-    },
-    "teams_involved": {
-        "suggestions": get_suggestions("teams_involved", team),
-        "multiple_choice": True
-    },
-    "stakeholders": {
-        "suggestions": get_suggestions("stakeholders", team),
-        "multiple_choice": True
-    },
-    "technical_components": {
-        "suggestions": get_suggestions("technical_components", team),
-        "multiple_choice": True
-    },
-}
-
-
-def display_message(role, content):
-    """
-    Utility function to display a chat message.
-    """
-    with st.chat_message(role):
-        if role == "user":
-            st.markdown(content)
-        elif role == "assistant":
-            # st.markdown(content)
-            display_typing_effect(content)
 
 
 def project_details_query(questions, answers):
@@ -48,9 +17,8 @@ def project_details_query(questions, answers):
     
     query += "Now, based on the above details, help me generate an epic for this project.\n"
     query += "Please also ask for any clarifications or missing information if needed."
-    # print(query)
-    return query
 
+    return query
 
 def handle_predefined_questions(predefined_questions):
     """
@@ -59,6 +27,10 @@ def handle_predefined_questions(predefined_questions):
     if st.session_state.current_question_index < len(predefined_questions):
         question_id = predefined_questions[st.session_state.current_question_index]["id"]
         question = predefined_questions[st.session_state.current_question_index]["question"]
+
+        # Replace placeholders in the question with the team name
+        if question_id == "teams_involved":
+            question = question.format(team=st.session_state.team_name)
         
         # Display the assistant message with the predefined question
         if not any(message["content"] == question for message in st.session_state.messages):
@@ -66,9 +38,9 @@ def handle_predefined_questions(predefined_questions):
             display_message("assistant", question)
         
         # Check if clickable suggestions need to be provided
-        if question_id in question_to_suggestions:
+        if question_id in generate_suggestions():
             st.chat_input(disabled=True)
-            user_answer = display_clickable_suggestions(question_id)
+            user_answer = display_clickable_suggestions(question_id)           
         else:
             user_answer = st.chat_input("Message")
 
@@ -123,7 +95,7 @@ def display_clickable_suggestions(question_id):
     """
     Displays the assistant message with a box of suggestions to choose from
     """
-    config = question_to_suggestions.get(question_id, {})
+    config = generate_suggestions().get(question_id, {})
     suggestions = config.get("suggestions", [])
     multiple_choice = config.get("multiple_choice", False)
     selected_suggestions = []
@@ -142,7 +114,6 @@ def display_clickable_suggestions(question_id):
                     if custom_input:
                         selected_suggestions.remove("Add another option...")
                         selected_suggestions.append(custom_input)
-            
             else:
                 options = suggestions + ["Another option..."]
                 selected_suggestions = [st.selectbox("Select option", options=options, label_visibility="collapsed")]
@@ -155,14 +126,12 @@ def display_clickable_suggestions(question_id):
     with col3:
         if st.button("Submit"):
             if selected_suggestions:
-                # Store the user's selected teams and add them to the session messages
                 user_response = ", ".join(selected_suggestions)
-                st.session_state.predefined_responses.append(user_response)
-                st.session_state.messages.append({"role": "user", "content": user_response})
 
-                # Move to the next question or action
-                st.session_state.current_question_index += 1
-                time.sleep(0.5)
-                st.rerun()
-            else:
-                st.warning("Please select at least one team.")
+                # Store Team Name and Stakeholders for future use
+                if question_id == "team":
+                    st.session_state.team_name = user_response
+                elif question_id == "stakeholders":
+                    st.session_state.stakeholders = user_response
+
+                return user_response
