@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from icecream import ic
 
 teams_data = pd.read_csv("teams_data.csv", sep=";")
 
@@ -23,7 +24,9 @@ def get_suggestions(question_id, team=None):
         return {
             "teams_involved": get_data_by_team(team, 'Collaborates With')+["None"],
             "stakeholders": get_data_by_team(team, 'Stakeholders'),
-            "technical_components": get_data_by_team(team, 'Components')
+            "technical_components": get_data_by_team(team, 'Components'),
+            "input_data": ["Yes", "No"],
+            "output_data": ["Yes", "No"],
         }.get(question_id, [])
     
     return []
@@ -62,6 +65,38 @@ def generate_suggestions():
                 "suggestions": get_suggestions("technical_components", team),
                 "multiple_choice": True
             },
+            "input_data": {
+                "suggestions": get_suggestions("input_data"),
+                "multiple_choice": False
+            },
+            "output_data": {
+                "suggestions": get_suggestions("output_data"),
+                "multiple_choice": False
+            }
         }
         st.session_state.question_to_suggestions = question_to_suggestions
     return question_to_suggestions
+
+
+def add_follow_up_questions(question_id):
+    """
+    Adds follow-up questions based on the user's response.
+    """
+    if question_id == "stakeholders":
+        ic(st.session_state.stakeholders)
+        print(type(st.session_state.stakeholders))
+        for stakeholder in st.session_state.stakeholders:
+            question_benefit = f"What is the benefit to {stakeholder}?"
+            question_changes = f"What changes for {stakeholder}?"
+            st.session_state.questions_to_ask.insert(0, {"id": f"benefit_{stakeholder}", "question": question_benefit})
+            st.session_state.questions_to_ask.insert(0, {"id": f"changes_{stakeholder}", "question": question_changes})
+
+    elif question_id == "input_data":
+        if st.session_state.input_data == "Yes":
+            question_input = "What new data and from which system is it needed"
+            st.session_state.questions_to_ask.insert(0, {"id": "input_data_details", "question": question_input})
+    
+    elif question_id == "output_data":
+        if st.session_state.output_data == "Yes":
+            question_output = "What new data are you outputting and where is it being sent to"
+            st.session_state.questions_to_ask.insert(0, {"id": "output_data_details", "question": question_output})

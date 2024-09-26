@@ -2,7 +2,7 @@ import streamlit as st
 import time
 from icecream import ic
 from utils import display_message
-from dynamic_question_logic import generate_suggestions
+from dynamic_question_logic import generate_suggestions, add_follow_up_questions
 
 
 
@@ -20,13 +20,13 @@ def project_details_query(questions, answers):
 
     return query
 
-def handle_predefined_questions(predefined_questions):
+def handle_predefined_questions():
     """
     Handles asking predefined questions and collecting responses.
     """
-    if st.session_state.current_question_index < len(predefined_questions):
-        question_id = predefined_questions[st.session_state.current_question_index]["id"]
-        question = predefined_questions[st.session_state.current_question_index]["question"]
+    if questions_to_ask:=st.session_state.questions_to_ask:
+        question_id = questions_to_ask[0]["id"]
+        question = questions_to_ask[0]["question"]
 
         # Replace placeholders in the question with the team name
         if question_id == "teams_involved":
@@ -40,23 +40,26 @@ def handle_predefined_questions(predefined_questions):
         # Check if clickable suggestions need to be provided
         if question_id in generate_suggestions():
             st.chat_input(disabled=True)
-            user_answer = display_clickable_suggestions(question_id)           
+            user_answer = display_clickable_suggestions(question_id)
         else:
             user_answer = st.chat_input("Message")
 
         # If user has answered, store the response and display it
         if user_answer:
-            st.session_state.predefined_responses.append(user_answer)
+            st.session_state.questions_to_ask.pop(0)
+            st.session_state.questions_asked.append(question)
+            st.session_state.user_responses.append(user_answer)
             st.session_state.messages.append({"role": "user", "content": user_answer})
-            st.session_state.current_question_index += 1
+
             display_message("user", user_answer)
+            add_follow_up_questions(question_id)
 
             # Wait for a short time before asking the next question
             time.sleep(0.5)
             st.rerun()
     else:
         # All predefined questions have been answered, generate the query
-        initial_query = project_details_query(predefined_questions, st.session_state.predefined_responses)
+        initial_query = project_details_query(st.session_state.questions_asked, st.session_state.user_responses)
         handle_assistant_response(initial_query)
         st.session_state.assistant_started = True
         st.rerun()
@@ -95,18 +98,23 @@ def display_clickable_suggestions(question_id):
     """
     Displays the assistant message with a box of suggestions to choose from
     """
-    config = generate_suggestions().get(question_id, {})
-    suggestions = config.get("suggestions", [])
-    multiple_choice = config.get("multiple_choice", False)
+    # Get suggestions based on the question ID
+    if question_id in ["input_data", "output_data"]:
+        suggestions = ["Yes", "No"]
+        multiple_choice = False
+    else:
+        config = generate_suggestions().get(question_id, {})
+        suggestions = config.get("suggestions", [])
+        multiple_choice = config.get("multiple_choice")
     selected_suggestions = []
     
+    # Display suggestions and collect user input
     col1, col2, col3 = st.columns([1, 11, 2])
-
     with col2:
         if suggestions:
             if multiple_choice:
-                options = suggestions + ["Add another option..."]
-                selected_suggestions = st.multiselect("Select from suggestions:", options, label_visibility="collapsed")
+                suggestions = suggestions + ["Add another option..."]
+                selected_suggestions = st.multiselect("Select from suggestions:", suggestions, label_visibility="collapsed")
 
                 # Create text input for user entry
                 if "Add another option..." in selected_suggestions:
@@ -115,8 +123,9 @@ def display_clickable_suggestions(question_id):
                         selected_suggestions.remove("Add another option...")
                         selected_suggestions.append(custom_input)
             else:
-                options = suggestions + ["Another option..."]
-                selected_suggestions = [st.selectbox("Select option", options=options, label_visibility="collapsed")]
+                if suggestions != ["Yes", "No"]:
+                    suggestions = suggestions + ["Add another option..."]
+                selected_suggestions = [st.selectbox("Select option", suggestions, label_visibility="collapsed")]
 
                 # Create text input for user entry
                 if selected_suggestions == ["Another option..."]: 
@@ -125,13 +134,15 @@ def display_clickable_suggestions(question_id):
         
     with col3:
         if st.button("Submit"):
-            if selected_suggestions:
-                user_response = ", ".join(selected_suggestions)
+            # Store Team Name and Stakeholders for future use
+            if question_id == "team":
+                st.session_state.team_name = ", ".join(selected_suggestions)
+            elif question_id == "stakeholders":
+                st.session_state.stakeholders = selected_suggestions
+            elif question_id == "input_data":
+                st.session_state.input_data = ", ".join(selected_suggestions)
+            elif question_id == "output_data":
+                st.session_state.output_data = ", ".join(selected_suggestions)
 
-                # Store Team Name and Stakeholders for future use
-                if question_id == "team":
-                    st.session_state.team_name = user_response
-                elif question_id == "stakeholders":
-                    st.session_state.stakeholders = user_response
-
-                return user_response
+            return ", ".join(selected_suggestions)
+        

@@ -3,21 +3,41 @@ import os
 from dotenv import load_dotenv
 from assistant_api import AssistantClient
 
+
+PREDEFINED_QUESTIONS = [
+    {"id": "team", "question": "What Team will be implementing this requirement?"},
+    {"id": "teams_involved", "question": "I see that {team} often works also with the following teams. Are any of them also involved for this epic?"},
+    {"id": "summary", "question": "Brief description of what you want"},
+    {"id": "differences", "question": "How is it different to what we are already doing?"},
+    {"id": "stakeholders", "question": "Which of your stakeholders benefit from this epic? "},
+    {"id": "technical_components", "question": "I think you usually work with the following technical components. Which technical components do you think are likely to be impacted? "},
+    {"id": "input_data", "question": "Do you need new input data for this epic?"},
+    {"id": "output_data", "question": "Are you providing new output data?"},
+    ]
+
+
 def init_session_state():
     """
     Initializes session state variables used throughout the app.
     """
     defaults = {
         "openai_model": "gpt-4o-2024-08-06",
-        "messages": [],
-        "current_question_index": 0,
-        "predefined_responses": [],
-        "assistant_started": False,
-        "thread_id": None,
         "assistant_client": None,
+        "thread_id": None,
+
+        "messages": [],
+        "assistant_started": False,
+        "questions_asked": 0,
+                
         "team_name": None,
-        "stakeholders": None,
-        "question_to_suggestions": {}
+        "stakeholders": [],
+        "input_data": None,
+        "output_data": None,
+        
+        "question_to_suggestions": {},
+        "questions_to_ask": PREDEFINED_QUESTIONS,
+        "questions_asked": [],
+        "user_responses": [],
     }
     
     for key, value in defaults.items():
