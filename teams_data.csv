@@ -1,0 +1,15 @@
+Team;Collaborates With;Stakeholders;Components
+UX Team;Frontend Team, DevOps Team, QA Team;Product Owner, Business Analyst, CTO;API Management, Microservices, Security Module
+Marketing Team;Backend Team, UX Team, QA Team;Data Scientist, Data Analyst, Engineering Lead;Data Pipeline, ETL, Machine Learning Models
+Product Management Team;Backend Team, DevOps Team, QA Team;Frontend Lead, UX Designer, Product Owner;React Framework, State Management, UI Components
+HR Team;Frontend Team, DevOps Team, Security Team;Backend Engineer, CTO, System Architect;Database Management, Caching, Backend Services
+Frontend Team;Backend Team, QA Team, Security Team;DevOps Lead, Infrastructure Engineer, CTO;CI/CD Pipeline, Docker, Kubernetes
+Backend Team;Marketing Team, Product Management Team, Operations Team;Product Owner, Business Analyst, CTO;API Management, Microservices, Security Module
+Security Team;Sales Team, Product Management Team, Customer Support;Data Scientist, Data Analyst, Engineering Lead;Data Pipeline, ETL, Machine Learning Models
+DevOps Team;Marketing Team, Sales Team, HR Team;Frontend Lead, UX Designer, Product Owner;React Framework, State Management, UI Components
+QA Team;Legal Team, Operations Team, Finance Team;Backend Engineer, CTO, System Architect;Database Management, Caching, Backend Services
+Finance Team;HR Team, Operations Team, Legal Team;DevOps Lead, Infrastructure Engineer, CTO;CI/CD Pipeline, Docker, Kubernetes
+Sales Team;DevOps Team, QA Team, Operations Team;Product Owner, Business Analyst, CTO;API Management, Microservices, Security Module
+Customer Support;HR Team, Finance Team, Operations Team;Data Scientist, Data Analyst, Engineering Lead;Data Pipeline, ETL, Machine Learning Models
+Operations Team;DevOps Team, Security Team, Legal Team;Backend Engineer, CTO, System Architect;Database Management, Caching, Backend Services
+Legal Team;Sales Team, UX Team, Marketing Team;DevOps Lead, Infrastructure Engineer, CTO;CI/CD Pipeline, Docker, Kubernetes
