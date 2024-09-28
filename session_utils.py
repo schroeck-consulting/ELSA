@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 from assistant_api import AssistantClient
+from copy import deepcopy
 
 
 PREDEFINED_QUESTIONS = [
@@ -23,11 +24,9 @@ def init_session_state():
     defaults = {
         "openai_model": "gpt-4o-2024-08-06",
         "assistant_client": None,
-        "thread_id": None,
 
         "messages": [],
         "assistant_started": False,
-        "questions_asked": 0,
                 
         "team_name": None,
         "stakeholders": [],
@@ -42,7 +41,7 @@ def init_session_state():
     
     for key, value in defaults.items():
         if key not in st.session_state:
-            st.session_state[key] = value
+            st.session_state[key] = deepcopy(value)
             
 
 def init_assistant_client():
