@@ -4,11 +4,12 @@ from session_utils import init_session_state, init_assistant_client
 
 
 def main():
-    st.title("Epic Builder Copilot")
-
     init_session_state()
     init_assistant_client()
     
+    # Display the title
+    st.title("ELSA - Epic Lifecycle Support Assistant")
+
     # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):

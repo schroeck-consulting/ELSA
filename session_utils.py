@@ -5,15 +5,17 @@ from assistant_api import AssistantClient
 from copy import deepcopy
 
 
+GREATING_MESSAGE = "Welcome! I'm ELSA, here to assist you in creating detailed and well-structured epics.\nI will ask you some questions to get into the context and guide you through the process.\nLet's get started!"
+
 PREDEFINED_QUESTIONS = [
-    {"id": "team", "question": "What Team will be implementing this requirement?"},
-    {"id": "teams_involved", "question": "I see that {team} often works also with the following teams. Are any of them also involved for this epic?"},
-    {"id": "summary", "question": "Brief description of what you want"},
-    {"id": "differences", "question": "How is it different to what we are already doing?"},
-    {"id": "stakeholders", "question": "Which of your stakeholders benefit from this epic? "},
-    {"id": "technical_components", "question": "I think you usually work with the following technical components. Which technical components do you think are likely to be impacted? "},
-    {"id": "input_data", "question": "Do you need new input data for this epic?"},
-    {"id": "output_data", "question": "Are you providing new output data?"},
+    {"id": "team", "question": "**What Team will be implementing this requirement?**"},
+    {"id": "teams_involved", "question": "**I see that {team} often works also with the following teams. Are any of them also involved for this epic?**"},
+    {"id": "summary", "question": "**Brief description of what you want**"},
+    {"id": "differences", "question": "**How is it different to what we are already doing?**"},
+    {"id": "stakeholders", "question": "**Which of your stakeholders benefit from this epic?**"},
+    {"id": "technical_components", "question": "**I think you usually work with the following technical components. Which technical components do you think are likely to be impacted?**"},
+    {"id": "input_data", "question": "**Do you need new input data for this epic?**"},
+    {"id": "output_data", "question": "**Are you providing new output data?**"},
     ]
 
 
@@ -25,8 +27,10 @@ def init_session_state():
         "openai_model": "gpt-4o-2024-08-06",
         "assistant_client": None,
 
-        "messages": [],
+        "messages": [{"role": "assistant", "content": GREATING_MESSAGE}],
         "assistant_started": False,
+        "chat_started": False,
+        # "modified_epic": "",
                 
         "team_name": None,
         "stakeholders": [],

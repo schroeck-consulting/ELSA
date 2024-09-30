@@ -83,20 +83,18 @@ def add_follow_up_questions(question_id):
     Adds follow-up questions based on the user's response.
     """
     if question_id == "stakeholders":
-        ic(st.session_state.stakeholders)
-        print(type(st.session_state.stakeholders))
         for stakeholder in st.session_state.stakeholders:
-            question_benefit = f"What is the benefit to {stakeholder}?"
-            question_changes = f"What changes for {stakeholder}?"
+            question_benefit = f"**What is the benefit to {stakeholder}?**"
+            question_changes = f"**What changes for {stakeholder}?**"
             st.session_state.questions_to_ask.insert(0, {"id": f"benefit_{stakeholder}", "question": question_benefit})
             st.session_state.questions_to_ask.insert(0, {"id": f"changes_{stakeholder}", "question": question_changes})
 
     elif question_id == "input_data":
         if st.session_state.input_data == "Yes":
-            question_input = "What new data and from which system is it needed"
+            question_input = "**What new data and from which system is it needed**"
             st.session_state.questions_to_ask.insert(0, {"id": "input_data_details", "question": question_input})
     
     elif question_id == "output_data":
         if st.session_state.output_data == "Yes":
-            question_output = "What new data are you outputting and where is it being sent to"
+            question_output = "**What new data are you outputting and where is it being sent to**"
             st.session_state.questions_to_ask.insert(0, {"id": "output_data_details", "question": question_output})
