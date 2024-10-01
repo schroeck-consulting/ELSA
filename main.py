@@ -2,10 +2,27 @@ import streamlit as st
 from assistant_handlers import handle_predefined_questions, handle_user_queries
 from session_utils import init_session_state, init_assistant_client
 
+def display_logo():
+    # To make logo bigger
+    st.html("""
+    <style>
+        [alt=Logo] {
+        height: 3rem;
+        }
+    </style>
+        """)
+    
+    # Display the logo at the sidebar
+    LOGO = "images/Dominik_Schroeck_Logo_RGB_Schwarz.svg"
+    st.logo(LOGO, icon_image=LOGO)
+    st.sidebar.markdown("")
+
 
 def main():
     init_session_state()
     init_assistant_client()
+    
+    display_logo()    
     
     # Display the title
     st.title("ELSA - Epic Lifecycle Support Assistant")
