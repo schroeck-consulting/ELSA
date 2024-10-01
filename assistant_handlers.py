@@ -152,13 +152,9 @@ def display_clickable_suggestions(question_id):
     Displays the assistant message with a box of suggestions to choose from
     """
     # Get suggestions based on the question ID
-    if question_id in ["input_data", "output_data"]:
-        suggestions = ["Yes", "No"]
-        multiple_choice = False
-    else:
-        config = generate_suggestions().get(question_id, {})
-        suggestions = config.get("suggestions", [])
-        multiple_choice = config.get("multiple_choice")
+    config = generate_suggestions().get(question_id, {})
+    suggestions = config.get("suggestions", [])
+    multiple_choice = config.get("multiple_choice")
     selected_suggestions = []
     
     # Display suggestions and collect user input
@@ -168,6 +164,10 @@ def display_clickable_suggestions(question_id):
             if multiple_choice:
                 suggestions = suggestions + ["Add another option..."]
                 selected_suggestions = st.multiselect("Select from suggestions:", suggestions, label_visibility="collapsed")
+                
+                # If "None" is selected, remove all other options
+                if "None" in selected_suggestions:
+                    selected_suggestions = ["None"]
 
                 # Create text input for user entry
                 if "Add another option..." in selected_suggestions:
