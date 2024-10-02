@@ -37,9 +37,11 @@ class AssistantClient:
     
 
     def extract_assistant_response(self, messages) -> str:
-        responses = []
-        for m in messages:
+        """
+        Extracts the most recent assistant response from the messages.
+        """
+        message_list = list(messages)
+        for m in reversed(message_list):
             if m.role == "assistant":
-                responses.append(m.content[0].text.value)
-        return "\n".join(responses)
-    
+                return m.content[0].text.value
+        return ""

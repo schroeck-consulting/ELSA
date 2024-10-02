@@ -13,32 +13,49 @@ def get_data_by_team(team, column):
     return row[column].iloc[0].split(", ") if not row.empty else []
 
 
+def get_prioritized_data(team_name, column_name):
+    """
+    For a given team, place the most used options at the top, followed by all other ones.
+    """
+    # Step 1: Get data for the team
+    team_data = get_data_by_team(team_name, column_name)
+    
+    # Step 2: Get all unique options from dataset
+    all_options = teams_data[column_name].str.split(',').explode().str.strip().unique()
+
+    # Step 3: Create the list of remaining options
+    remaining_data = [d for d in all_options if d not in team_data]
+    
+    return team_data + remaining_data
+
+
 def get_suggestions(question_id, team=None):
     """
     Gets suggestions based on the question ID
     """
-    if question_id == "team":
-        return teams_data['Team'].tolist()
-    
     if team:
-        return {
-            "teams_involved": get_data_by_team(team, 'Collaborates With')+["None"],
-            "stakeholders": get_data_by_team(team, 'Stakeholders'),
-            "technical_components": get_data_by_team(team, 'Components'),
+        question_map = {
+            "teams_involved": get_prioritized_data(team, "Collaborates With")+["None"],
+            "stakeholders": get_prioritized_data(team, "Stakeholders"),
+            "technical_components": get_prioritized_data(team, "Components"),
+        }
+    else:
+        question_map = {
+            "team": teams_data['Team'].tolist(),
             "input_data": ["Yes", "No"],
             "output_data": ["Yes", "No"],
-        }.get(question_id, [])
-    
-    return []
+        }
+    return question_map.get(question_id, [])
 
 
 def generate_suggestions():
     """
     Generates suggestions for the current question based on the team name.
     """
-    if st.session_state.question_to_suggestions != {}:
+    # If we already have all suggestions, return them
+    if len(st.session_state.question_to_suggestions) > 1:
         return st.session_state.question_to_suggestions
-    
+
     team = st.session_state.team_name
     if team == None:
         question_to_suggestions = {
@@ -74,7 +91,7 @@ def generate_suggestions():
                 "multiple_choice": False
             }
         }
-        st.session_state.question_to_suggestions = question_to_suggestions
+    st.session_state.question_to_suggestions = question_to_suggestions
     return question_to_suggestions
 
 
@@ -83,20 +100,18 @@ def add_follow_up_questions(question_id):
     Adds follow-up questions based on the user's response.
     """
     if question_id == "stakeholders":
-        ic(st.session_state.stakeholders)
-        print(type(st.session_state.stakeholders))
         for stakeholder in st.session_state.stakeholders:
-            question_benefit = f"What is the benefit to {stakeholder}?"
-            question_changes = f"What changes for {stakeholder}?"
+            question_benefit = f"**What is the benefit to {stakeholder}?**"
+            question_changes = f"**What changes for {stakeholder}?**"
             st.session_state.questions_to_ask.insert(0, {"id": f"benefit_{stakeholder}", "question": question_benefit})
             st.session_state.questions_to_ask.insert(0, {"id": f"changes_{stakeholder}", "question": question_changes})
 
     elif question_id == "input_data":
         if st.session_state.input_data == "Yes":
-            question_input = "What new data and from which system is it needed"
+            question_input = "**What new data and from which system is it needed**"
             st.session_state.questions_to_ask.insert(0, {"id": "input_data_details", "question": question_input})
     
     elif question_id == "output_data":
         if st.session_state.output_data == "Yes":
-            question_output = "What new data are you outputting and where is it being sent to"
+            question_output = "**What new data are you outputting and where is it being sent to**"
             st.session_state.questions_to_ask.insert(0, {"id": "output_data_details", "question": question_output})
