@@ -146,6 +146,17 @@ def handle_user_queries():
         handle_assistant_response(user_query)
 
 
+def handle_custom_input(selected_suggestions):
+    """
+    Handles the custom input logic when 'Add another option...' is selected.
+    """
+    if "Add another option..." in selected_suggestions:
+        custom_input = st.text_input("Enter your other option...")
+        if custom_input:
+            selected_suggestions.remove("Add another option...")
+            selected_suggestions.append(custom_input)
+    return selected_suggestions
+
 
 def display_clickable_suggestions(question_id):
     """
@@ -170,21 +181,16 @@ def display_clickable_suggestions(question_id):
                     selected_suggestions = ["None"]
 
                 # Create text input for user entry
-                if "Add another option..." in selected_suggestions:
-                    custom_input = st.text_input("Enter your other option...")
-                    if custom_input:
-                        selected_suggestions.remove("Add another option...")
-                        selected_suggestions.append(custom_input)
+                selected_suggestions = handle_custom_input(selected_suggestions)
+
             else:
                 if suggestions != ["Yes", "No"]:
                     suggestions = suggestions + ["Add another option..."]
                 selected_suggestions = [st.selectbox("Select option", suggestions, label_visibility="collapsed")]
 
                 # Create text input for user entry
-                if selected_suggestions == ["Another option..."]: 
-                    selected_suggestions = [st.text_input("Enter your other option...")]
+                selected_suggestions = handle_custom_input(selected_suggestions)                  
     
-        
     with col3:
         if st.button("Submit", key=f"{question_id}_submit"):
             # Store Team Name and Stakeholders for future use
