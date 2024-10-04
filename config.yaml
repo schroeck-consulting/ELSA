@@ -1,5 +1,5 @@
 cookie:
-  expiry_days: 1
+  expiry_days: 0
   key: some_signature_key
   name: some_cookie_name
 credentials:
@@ -11,6 +11,15 @@ credentials:
       last_name: gunaza
       logged_in: false
       password: $2b$12$SJAmmlGCWOnX8vknrv.la.tSm1z2OsH2yQ0AtepmdgECND6YQnGOK
+      password_hint: hint
+      roles: null
+    dominik:
+      email: dominik@schroeck-consulting.de
+      failed_login_attempts: 0
+      first_name: dominik
+      last_name: schroeck
+      logged_in: true
+      password: $2b$12$te4Z.P6Vc76C0ZsrGHIb0ewQQwGRfacRJE4u9G3vvcstsb1g87aa.
       password_hint: hint
       roles: null
 oauth2:
