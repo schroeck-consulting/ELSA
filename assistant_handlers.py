@@ -149,12 +149,14 @@ def handle_user_queries():
 def handle_custom_input(selected_suggestions):
     """
     Handles the custom input logic when 'Add another option...' is selected.
+    Multiple options can be entered by the user separated by commas.
     """
     if "Add another option..." in selected_suggestions:
-        custom_input = st.text_input("Enter your other option...")
+        custom_input = st.text_input("Enter your other option(s)...")
         if custom_input:
+            custom_options = [option.strip() for option in custom_input.split(',')]
             selected_suggestions.remove("Add another option...")
-            selected_suggestions.append(custom_input)
+            selected_suggestions.extend(custom_options)
     return selected_suggestions
 
 
