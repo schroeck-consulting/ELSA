@@ -9,8 +9,17 @@ credentials:
       failed_login_attempts: 0
       first_name: anna
       last_name: gunaza
-      logged_in: false
+      logged_in: true
       password: $2b$12$SJAmmlGCWOnX8vknrv.la.tSm1z2OsH2yQ0AtepmdgECND6YQnGOK
+      password_hint: hint
+      roles: null
+    beta-access:
+      email: dominik@schroeck-consulting.de
+      failed_login_attempts: 0
+      first_name: dominik
+      last_name: schroeck
+      logged_in: true
+      password: $2b$12$k45Ck268o4KyECrroeeOmeVVQZGTFzOXfK2xo/3Yi1hMstmXLOM7e
       password_hint: hint
       roles: null
     dominik:
