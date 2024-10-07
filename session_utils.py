@@ -26,6 +26,7 @@ def init_session_state():
     defaults = {
         "openai_model": "gpt-4o-2024-08-06",
         "assistant_client": None,
+        "authentication_status": None,
 
         "messages": [{"role": "assistant", "content": GREATING_MESSAGE}],
         "assistant_started": False,
