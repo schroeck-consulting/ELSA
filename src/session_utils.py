@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from dotenv import load_dotenv
-from assistant_api import AssistantClient
+from src.assistant_api import AssistantClient
 from copy import deepcopy
 
 

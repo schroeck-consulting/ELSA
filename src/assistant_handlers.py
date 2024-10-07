@@ -2,8 +2,8 @@ import streamlit as st
 import time
 import re
 from icecream import ic
-from utils import display_message, display_typing_effect
-from dynamic_question_logic import generate_suggestions, add_follow_up_questions
+from src.utils import display_message, display_typing_effect
+from src.dynamic_question_logic import generate_suggestions, add_follow_up_questions
 
 
 
