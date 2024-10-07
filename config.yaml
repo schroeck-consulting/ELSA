@@ -1,0 +1,47 @@
+cookie:
+  expiry_days: 0
+  key: some_signature_key
+  name: some_cookie_name
+credentials:
+  usernames:
+    anna:
+      email: anna.gunaza@schroeck-consulting.de
+      failed_login_attempts: 0
+      first_name: anna
+      last_name: gunaza
+      logged_in: true
+      password: $2b$12$SJAmmlGCWOnX8vknrv.la.tSm1z2OsH2yQ0AtepmdgECND6YQnGOK
+      password_hint: hint
+      roles: null
+    beta-access:
+      email: dominik@schroeck-consulting.de
+      failed_login_attempts: 0
+      first_name: dominik
+      last_name: schroeck
+      logged_in: true
+      password: $2b$12$k45Ck268o4KyECrroeeOmeVVQZGTFzOXfK2xo/3Yi1hMstmXLOM7e
+      password_hint: hint
+      roles: null
+    dominik:
+      email: dominik@schroeck-consulting.de
+      failed_login_attempts: 0
+      first_name: dominik
+      last_name: schroeck
+      logged_in: true
+      password: $2b$12$te4Z.P6Vc76C0ZsrGHIb0ewQQwGRfacRJE4u9G3vvcstsb1g87aa.
+      password_hint: hint
+      roles: null
+oauth2:
+  google:
+    client_id: null
+    client_secret: null
+    redirect_uri: null
+  microsoft:
+    client_id: null
+    client_secret: null
+    redirect_uri: null
+    tenant_id: null
+pre-authorized:
+  emails:
+  - anna.gunaza@schroeck-consulting.de
+  - dominik@schroeck-consulting.de
