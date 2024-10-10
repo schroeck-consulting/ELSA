@@ -1,7 +1,7 @@
 import streamlit as st
-from assistant_handlers import handle_predefined_questions, handle_user_queries
-from session_utils import init_session_state, init_assistant_client
-from auth import authenticate
+from src.assistant_handlers import handle_predefined_questions, handle_user_queries
+from src.session_utils import init_session_state, init_assistant_client
+from src.auth import authenticate
 
 
 def display_logo():
