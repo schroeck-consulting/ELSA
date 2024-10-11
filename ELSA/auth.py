@@ -17,6 +17,10 @@ def authenticate():
     Handles the authentication using streamlit-authenticate.
     """
 
+    if not st.secrets.get('credentials'): # If no authentication configured, skip
+        ss["authentication_status"] = True
+        return
+
     def convert_secrets_to_strings(secrets):
         converted_dict = {}
         for key, value in secrets.items():
@@ -29,6 +33,7 @@ def authenticate():
         return converted_dict
 
     secrets = convert_secrets_to_strings(st.secrets)
+
 
     # Initialize the authenticator with credentials and cookie settings
     authenticator = stauth.Authenticate(

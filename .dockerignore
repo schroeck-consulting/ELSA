@@ -3,3 +3,4 @@ Dockerfile
 .git/
 README.md
 .env
+.streamlit/
