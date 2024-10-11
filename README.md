@@ -1,13 +1,13 @@
-# Epic Builder Copilot
+# ELSA
 
-Epic Builder Copilot is a Streamlit-based application that leverages OpenAI's GPT-4 model to assist users in generating and managing epic stories for their projects.
+ELSA is a Streamlit-based application that leverages OpenAI's GPT-4 model to assist users in generating and managing epic stories for their projects.
 
 ## Prerequisites
 
 - Python 3.8 or higher
 - Streamlit
 - OpenAI API Key
-- `.env` file with the following variables:
+- `secrets.toml` file with the following variables:
   - `ASSISTANT_ID`
   - `OPENAI_API_KEY`
 
@@ -15,8 +15,8 @@ Epic Builder Copilot is a Streamlit-based application that leverages OpenAI's GP
 
 1. Clone the repository:
 ```sh
-git clone https://github.com/yourusername/epic-builder-copilot.git
-cd epic-builder-copilot
+git clone https://github.com/schroeck-consulting/epic-builder-copilot.git
+cd ELSA
 ```
 
 2. Create and activate a virtual environment:
@@ -31,7 +31,7 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 pip install -r requirements.txt
 ```
 
-4. Create a .env file in the root directory and add your OpenAI API key and Assistant ID:
+4. Create a ``secrets`` file in the [.streamlit](.streamlit) directory and add your OpenAI API key and Assistant ID:
 ```sh
 ASSISTANT_ID=your_assistant_id
 OPENAI_API_KEY=your_openai_api_key

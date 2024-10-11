@@ -1,5 +1,16 @@
+#  _____      _                         _      _____ _____   _____                       _ _   _
+# /  ___|    | |                       | |    |_   _|_   _| /  __ \                     | | | (_)
+# \ `--.  ___| |__  _ __ ___   ___  ___| | __   | |   | |   | /  \/ ___  _ __  ___ _   _| | |_ _ _ __   __ _
+#  `--. \/ __| '_ \| '__/ _ \ / _ \/ __| |/ /   | |   | |   | |    / _ \| '_ \/ __| | | | | __| | '_ \ / _` |
+# /\__/ / (__| | | | | | (_) |  __/ (__|   <   _| |_  | |   | \__/\ (_) | | | \__ \ |_| | | |_| | | | | (_| |
+# \____/ \___|_| |_|_|  \___/ \___|\___|_|\_\  \___/  \_/    \____/\___/|_| |_|___/\__,_|_|\__|_|_| |_|\__, |
+#                                                                                                       __/ |
+#                                                                                                      |___/
+
 import time
+
 from openai import OpenAI
+
 
 class AssistantClient:
 
@@ -7,10 +18,8 @@ class AssistantClient:
         self.client = OpenAI(api_key=api_key)
         self.assistant_id = assistant_id
 
-
     def create_thread(self):
         return self.client.beta.threads.create()
-    
 
     def submit_message(self, thread_id, user_message: str):
         self.client.beta.threads.messages.create(
@@ -20,7 +29,6 @@ class AssistantClient:
             thread_id=thread_id,
             assistant_id=self.assistant_id,
         )
-    
 
     def wait_on_run(self, run, thread_id):
         while run.status == "queued" or run.status == "in_progress":
@@ -30,11 +38,10 @@ class AssistantClient:
             )
             time.sleep(0.5)
         return run
-    
 
     def get_response_messages(self, thread_id):
-        return self.client.beta.threads.messages.list(thread_id=thread_id, order="asc")
-    
+        return self.client.beta.threads.messages.list(thread_id=thread_id,
+                                                      order="asc")
 
     def extract_assistant_response(self, messages) -> str:
         """
