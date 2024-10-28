@@ -75,7 +75,7 @@ def handle_predefined_questions():
         # All predefined questions have been answered, generate the query
         initial_query = project_details_query(st.session_state.questions_asked,
                                               st.session_state.user_responses)
-        handle_assistant_response(initial_query)
+        handle_assistant_response_streaming(initial_query)
         st.session_state.assistant_started = True
         st.rerun()
 
@@ -120,10 +120,11 @@ def handle_predefined_questions():
 #         st.markdown(content)
 #         st.session_state.modified_epic = modified_epic
 
-
+# this functiion is not used now
 def handle_assistant_response(query):
     """
     Handles interaction with the assistant, submitting a query and displaying the response.
+    No streaming is used, so the response is displayed after the assistant has finished processing.
     """
     assistant_client = st.session_state.assistant_client
     thread_id = st.session_state.thread_id
@@ -152,6 +153,21 @@ def handle_assistant_response(query):
         #     st.session_state.messages.append({"role": "assistant", "content": response})
 
 
+def handle_assistant_response_streaming(query):
+    '''
+    Handles interaction with the assistant, submitting a query and displaying the response.
+    Uses streaming to receive the response in real-time.
+    '''
+    assistant_client = st.session_state.assistant_client
+    thread_id = st.session_state.thread_id
+    assistant_client.add_query_to_thread(thread_id, query)
+
+    with st.chat_message("assistant"):
+        assistant_reply = assistant_client.stream_assistant_response(thread_id)
+
+        st.session_state.messages.append(
+            {"role": "assistant", "content": assistant_reply})
+
 def handle_user_queries():
     """
     Handles user input and communication after assistant interaction has started.
@@ -161,7 +177,7 @@ def handle_user_queries():
             {"role": "user", "content": user_query})
         display_message("user", user_query)
 
-        handle_assistant_response(user_query)
+        handle_assistant_response_streaming(user_query)
 
 
 def handle_custom_input(selected_suggestions):
