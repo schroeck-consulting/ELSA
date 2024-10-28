@@ -79,47 +79,6 @@ def handle_predefined_questions():
         st.session_state.assistant_started = True
         st.rerun()
 
-
-# def split_epic_text(epic_text):
-#     """
-#     Splits the generated epic into three parts:
-#     - start: Everything before EPIC_START
-#     - epic: Everything between EPIC_START and EPIC_END
-#     - end: Everything after EPIC_END
-#     """
-#     # Split the text at EPIC_START
-#     parts = re.split(r"EPIC_START", epic_text, maxsplit=1)
-#     start = parts[0].strip() if len(parts) > 0 else ""
-
-#     # Further split at EPIC_END to extract the epic and end parts
-#     if len(parts) > 1:
-#         epic_parts = re.split(r"EPIC_END", parts[1], maxsplit=1)
-#         epic = epic_parts[0].strip() if len(epic_parts) > 0 else ""
-#         end = epic_parts[1].strip() if len(epic_parts) > 1 else ""
-#     else:
-#         epic = ""
-#         end = ""
-
-#     return start, epic, end
-
-
-# def display_generated_epic(user_response):
-#     """
-#     Displays the generated epic and allows the user to modify it.
-#     """
-#     start_text, epic_text, end_text = split_epic_text(user_response)
-
-#     # Display the epic in the text area for modification
-#     display_typing_effect(start_text)
-#     modified_epic = st.text_area("Modify the epic if needed:", value=epic_text, height=500)
-#     display_typing_effect(end_text)
-
-#     # If user submits the modified epic, display a confirmation message
-#     if st.button("Submit", key="submit_epic"):
-#         content = "Here is the modified epic:\n\n" + modified_epic + "\n\nAre you happy with it?" # if yes, store it and send to Jira
-#         st.markdown(content)
-#         st.session_state.modified_epic = modified_epic
-
 # this functiion is not used now
 def handle_assistant_response(query):
     """
@@ -141,17 +100,6 @@ def handle_assistant_response(query):
         display_typing_effect(response)
         st.session_state.messages.append(
             {"role": "assistant", "content": response})
-
-        # if "EPIC_START" in response:
-        #     display_generated_epic(response)
-        #     if st.session_state.modified_epic != "":
-        #         content = "Here is the modified epic:\n\n" + st.session_state.modified_epic + "\n\nAre you happy with it?"
-        #         st.markdown(content)
-        #         st.session_state.messages.append({"role": "assistant", "content": content})
-        # else:
-        #     display_typing_effect(response)
-        #     st.session_state.messages.append({"role": "assistant", "content": response})
-
 
 def handle_assistant_response_streaming(query):
     '''
