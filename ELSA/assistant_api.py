@@ -8,8 +8,12 @@
 #                                                                                                      |___/
 
 import time
+import streamlit as st
 
 from openai import OpenAI
+from openai.types.beta.assistant_stream_event import ThreadMessageDelta
+from openai.types.beta.threads.text_delta_block import TextDeltaBlock 
+
 
 
 class AssistantClient:
@@ -52,3 +56,34 @@ class AssistantClient:
             if m.role == "assistant":
                 return m.content[0].text.value
         return ""
+    
+    
+    def add_query_to_thread(self, thread_id, query):
+        '''
+        Adds a user query to the thread.
+        '''
+        self.client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=query
+            )
+        
+    def stream_assistant_response(self, thread_id):
+        stream = self.client.beta.threads.runs.create(
+                thread_id=thread_id,
+                assistant_id=self.assistant_id,
+                stream=True
+                )
+            
+        assistant_reply_box = st.empty()
+        assistant_reply = ""
+
+        for event in stream:
+            # we only consider the streaming events with a delta text
+            if isinstance(event, ThreadMessageDelta):
+                if isinstance(event.data.delta.content[0], TextDeltaBlock):
+                    assistant_reply_box.empty()
+                    assistant_reply += event.data.delta.content[0].text.value
+                    assistant_reply_box.markdown(assistant_reply)
+
+        return assistant_reply
