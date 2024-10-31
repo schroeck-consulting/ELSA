@@ -8,6 +8,7 @@
 #                                                                                                      |___/
 
 import time
+import re
 import streamlit as st
 
 from openai import OpenAI
@@ -78,6 +79,7 @@ class AssistantClient:
         assistant_reply_box = st.empty()
         assistant_reply = ""
 
+        # Stream the assistant response
         for event in stream:
             # we only consider the streaming events with a delta text
             if isinstance(event, ThreadMessageDelta):
@@ -86,4 +88,8 @@ class AssistantClient:
                     assistant_reply += event.data.delta.content[0].text.value
                     assistant_reply_box.markdown(assistant_reply)
 
-        return assistant_reply
+        # Remove the EPIC_START and EPIC_END keywords
+        assistant_reply_without_keywords = re.sub(r"EPIC_START|EPIC_END", "", assistant_reply).strip()
+        assistant_reply_box.markdown(assistant_reply_without_keywords)
+
+        return assistant_reply, assistant_reply_without_keywords
