@@ -8,11 +8,12 @@
 #                                                                                                      |___/
 
 import time
-
+import re
 import streamlit as st
 
 from .dynamic_question_logic import generate_suggestions, \
-    add_follow_up_questions
+                                    add_follow_up_questions
+from .jira_api import post_epic_to_jira
 from .utils import display_message, display_typing_effect
 
 
@@ -77,7 +78,48 @@ def handle_predefined_questions():
                                               st.session_state.user_responses)
         handle_assistant_response_streaming(initial_query)
         st.session_state.assistant_started = True
-        st.rerun()
+        # st.rerun()
+
+def extract_epic_from_response(response):
+    '''
+    Extracts the epic body from the assistant response.
+    '''
+    match = re.search(r"EPIC_START(.*?)EPIC_END", response, re.DOTALL)
+
+    if match:
+        epic_content = match.group(1).strip()
+        print("Epic content:\n", epic_content)
+    else:
+        print("No epic content found.")
+
+    return "EPIC", epic_content
+
+    # TODO: ask assistant to extract the title and the team name from the epic
+    # in a format: "EPIC_TITLE: <title>, TEAM_NAME: <main_team_name>"
+    # no other words, just theіe two values
+    # (або одразу включити ці ключові слова в інструкціях для асистента?)
+
+def callback_send_to_jira(epic_title, epic_description):
+    """
+    Send the epic to Jira once the button was clicked.
+    Display the request and response in the chat.
+    """
+    response = post_epic_to_jira(epic_title, epic_description)
+
+    # Check the response
+    if response.status_code == 201:
+        assistant_response = f"Epic created successfully! Check the link: {response.json().get('self')}"
+        # print("Epic created successfully:", response.json())
+    else:
+        assistant_response = f"Failed to create epic:{response.status_code}, {response.text}"
+        # print("Failed to create epic:", response.status_code, response.text)
+
+    # Add the messages to the chat
+    st.session_state.messages.append(
+        {"role": "user", "content": "Send the epic to Jira"})
+    st.session_state.messages.append(
+        {"role": "assistant", "content": assistant_response})
+
 
 # this functiion is not used now
 def handle_assistant_response(query):
@@ -105,16 +147,23 @@ def handle_assistant_response_streaming(query):
     '''
     Handles interaction with the assistant, submitting a query and displaying the response.
     Uses streaming to receive the response in real-time.
+    If the assistant response contains an epic, a button to send it to Jira is displayed.
     '''
+    # Add the user query to the thread
     assistant_client = st.session_state.assistant_client
     thread_id = st.session_state.thread_id
     assistant_client.add_query_to_thread(thread_id, query)
-
+    
+    # Display the assistant response
     with st.chat_message("assistant"):
-        assistant_reply = assistant_client.stream_assistant_response(thread_id)
-
+        assistant_reply, assistant_reply_without_keywords = assistant_client.stream_assistant_response(thread_id)
         st.session_state.messages.append(
-            {"role": "assistant", "content": assistant_reply})
+            {"role": "assistant", "content": assistant_reply_without_keywords})
+        
+    # Extract the epic from the assistant response and display the button
+    if "EPIC_START" in assistant_reply:
+        epic_title, epic_text = extract_epic_from_response(assistant_reply)
+        st.button("Send to Jira", on_click=callback_send_to_jira, args=(epic_title, epic_text))
 
 def handle_user_queries():
     """
