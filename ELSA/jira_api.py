@@ -42,11 +42,4 @@ def post_epic_to_jira(epic_title, epic_description):
         headers=headers,
         data=payload
     )
-
-    # Check the response
-    if response.status_code == 201:
-        print("Epic created successfully:", response.json())
-        return response.json()
-    else:
-        print("Failed to create epic:", response.status_code, response.text)
-        return None
+    return response
