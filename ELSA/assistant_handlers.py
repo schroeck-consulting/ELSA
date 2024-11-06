@@ -98,8 +98,6 @@ def get_epic_details():
     """
     Get the team name and epic title from the assistant response.
     """
-    # with st.spinner("Getting the Epic details..."):
-
     query = "Please provide the team name and epic title from our last interaction in JSON format as follows:\n\
         {\"team_name\": \"TeamNameHere\", \
         \"epic_title\": \"EpicTitleHere\"}\n\
@@ -135,7 +133,8 @@ def callback_send_to_jira(assistant_reply):
 
     # Check the response
     if response.status_code == 201:
-        link = "https://schroeck-consulting.atlassian.net/jira/software/projects/VRFA/boards/3/timeline"
+        selected_issue = response.json().get('key')
+        link = f"https://schroeck-consulting.atlassian.net/jira/software/projects/VRFA/boards/3/timeline?selectedIssue={selected_issue}"
         assistant_response = f"Epic created successfully! Check the link: {link}"
     else:
         assistant_response = f"Failed to create epic:{response.status_code}, {response.text}"
