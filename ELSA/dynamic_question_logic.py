@@ -10,8 +10,8 @@
 import pandas as pd
 import streamlit as st
 
-teams_data = pd.read_csv("teams_data.csv", sep=";")
-
+# teams_data = pd.read_csv("teams_data.csv", sep=";")
+teams_data = pd.read_csv("updated_teams_and_collaborations_data.csv", sep=",")
 
 # TODO: Pull context from a BLOB Storage
 
